@@ -27,12 +27,32 @@ export class Restaurant {
   }
 
   createReservation(input: CreateReservationInput): Reservation {
+    const customerName = input.customerName.trim();
+    const date = input.date.trim();
+    const time = input.time.trim();
+
+    if (!customerName) {
+      throw new Error('El nombre del cliente es obligatorio');
+    }
+
+    if (!Number.isInteger(input.partySize) || input.partySize <= 0) {
+      throw new Error('La cantidad de personas debe ser mayor que cero');
+    }
+
+    if (!date) {
+      throw new Error('La fecha es obligatoria');
+    }
+
+    if (!time) {
+      throw new Error('La hora es obligatoria');
+    }
+
     const reservation: Reservation = {
       code: this.generateReservationCode(),
-      customerName: input.customerName,
+      customerName,
       partySize: input.partySize,
-      date: input.date,
-      time: input.time,
+      date,
+      time,
       status: 'active',
     };
 
