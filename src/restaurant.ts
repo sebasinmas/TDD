@@ -27,6 +27,19 @@ export class Restaurant {
   }
 
   createReservation(input: CreateReservationInput): Reservation {
+    const reservationData = this.validateReservationInput(input);
+
+    const reservation: Reservation = {
+      code: this.generateReservationCode(),
+      ...reservationData,
+      status: 'active',
+    };
+
+    this.reservations.set(reservation.code, reservation);
+    return this.copyReservation(reservation);
+  }
+
+  private validateReservationInput(input: CreateReservationInput): CreateReservationInput {
     const customerName = input.customerName.trim();
     const date = input.date.trim();
     const time = input.time.trim();
@@ -47,17 +60,12 @@ export class Restaurant {
       throw new Error('La hora es obligatoria');
     }
 
-    const reservation: Reservation = {
-      code: this.generateReservationCode(),
+    return {
       customerName,
       partySize: input.partySize,
       date,
       time,
-      status: 'active',
     };
-
-    this.reservations.set(reservation.code, reservation);
-    return this.copyReservation(reservation);
   }
 
   private generateReservationCode(): string {
