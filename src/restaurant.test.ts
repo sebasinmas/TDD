@@ -62,4 +62,34 @@ describe('Restaurant reservations', () => {
   ])('rejects invalid reservation data: $caseName', ({ input, message }) => {
     expect(() => restaurant.createReservation(input)).toThrow(message);
   });
+
+  it('checks available capacity for a date and time', () => {
+    restaurant.createReservation({
+      customerName: 'Ana Perez',
+      partySize: 26,
+      date: '2026-09-01',
+      time: '20:00',
+    });
+
+    expect(restaurant.hasAvailability('2026-09-01', '20:00', 4)).toBe(true);
+    expect(restaurant.hasAvailability('2026-09-01', '20:00', 5)).toBe(false);
+  });
+
+  it('rejects a reservation when requested capacity is insufficient', () => {
+    restaurant.createReservation({
+      customerName: 'Ana Perez',
+      partySize: 26,
+      date: '2026-09-01',
+      time: '20:00',
+    });
+
+    expect(() =>
+      restaurant.createReservation({
+        customerName: 'Luis Diaz',
+        partySize: 5,
+        date: '2026-09-01',
+        time: '20:00',
+      }),
+    ).toThrow('No hay disponibilidad para la fecha y hora solicitada');
+  });
 });
