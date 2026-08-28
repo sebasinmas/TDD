@@ -92,4 +92,49 @@ describe('Restaurant reservations', () => {
       }),
     ).toThrow('No hay disponibilidad para la fecha y hora solicitada');
   });
+
+  it('cancels an active reservation', () => {
+    const reservation = restaurant.createReservation({
+      customerName: 'Ana Perez',
+      partySize: 4,
+      date: '2026-09-01',
+      time: '20:00',
+    });
+
+    const cancelledReservation = restaurant.cancelReservation(reservation.code);
+
+    expect(cancelledReservation.status).toBe('cancelled');
+  });
+
+  it('rejects cancellation with a non-existing reservation code', () => {
+    expect(() => restaurant.cancelReservation('RES-9999')).toThrow('Reserva no encontrada');
+  });
+
+  it('rejects cancellation of an already cancelled reservation', () => {
+    const reservation = restaurant.createReservation({
+      customerName: 'Ana Perez',
+      partySize: 4,
+      date: '2026-09-01',
+      time: '20:00',
+    });
+
+    restaurant.cancelReservation(reservation.code);
+
+    expect(() => restaurant.cancelReservation(reservation.code)).toThrow(
+      'La reserva ya fue cancelada',
+    );
+  });
+
+  it('recovers capacity after a reservation is cancelled', () => {
+    const reservation = restaurant.createReservation({
+      customerName: 'Ana Perez',
+      partySize: 30,
+      date: '2026-09-01',
+      time: '20:00',
+    });
+
+    restaurant.cancelReservation(reservation.code);
+
+    expect(restaurant.hasAvailability('2026-09-01', '20:00', 30)).toBe(true);
+  });
 });
