@@ -52,6 +52,23 @@ export class Restaurant {
     return reservedCapacity + requestedPartySize <= this.capacityPerSlot;
   }
 
+  cancelReservation(code: string): Reservation {
+    const reservation = this.reservations.get(code);
+
+    if (!reservation) {
+      throw new Error('Reserva no encontrada');
+    }
+
+    if (reservation.status === 'cancelled') {
+      throw new Error('La reserva ya fue cancelada');
+    }
+
+    const cancelledReservation: Reservation = { ...reservation, status: 'cancelled' };
+    this.reservations.set(code, cancelledReservation);
+
+    return this.copyReservation(cancelledReservation);
+  }
+
   private validateReservationInput(input: CreateReservationInput): CreateReservationInput {
     const customerName = input.customerName.trim();
     const date = input.date.trim();
