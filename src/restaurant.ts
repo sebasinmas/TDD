@@ -29,6 +29,10 @@ export class Restaurant {
   createReservation(input: CreateReservationInput): Reservation {
     const reservationData = this.validateReservationInput(input);
 
+    if (!this.hasAvailability(reservationData.date, reservationData.time, reservationData.partySize)) {
+      throw new Error('No hay disponibilidad para la fecha y hora solicitada');
+    }
+
     const reservation: Reservation = {
       code: this.generateReservationCode(),
       ...reservationData,
@@ -37,6 +41,21 @@ export class Restaurant {
 
     this.reservations.set(reservation.code, reservation);
     return this.copyReservation(reservation);
+  }
+
+  hasAvailability(date: string, time: string, requestedPartySize = 1): boolean {
+    if (!Number.isInteger(requestedPartySize) || requestedPartySize <= 0) {
+      throw new Error('La cantidad de personas debe ser mayor que cero');
+    }
+
+    const reservedCapacity = Array.from(this.reservations.values())
+      .filter(
+        (reservation) =>
+          reservation.date === date && reservation.time === time && reservation.status === 'active',
+      )
+      .reduce((total, reservation) => total + reservation.partySize, 0);
+
+    return reservedCapacity + requestedPartySize <= this.capacityPerSlot;
   }
 
   private validateReservationInput(input: CreateReservationInput): CreateReservationInput {
