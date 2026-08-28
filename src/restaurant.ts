@@ -48,13 +48,7 @@ export class Restaurant {
       throw new Error('La cantidad de personas debe ser mayor que cero');
     }
 
-    const reservedCapacity = Array.from(this.reservations.values())
-      .filter(
-        (reservation) =>
-          reservation.date === date && reservation.time === time && reservation.status === 'active',
-      )
-      .reduce((total, reservation) => total + reservation.partySize, 0);
-
+    const reservedCapacity = this.getReservedCapacityForSlot(date, time);
     return reservedCapacity + requestedPartySize <= this.capacityPerSlot;
   }
 
@@ -85,6 +79,15 @@ export class Restaurant {
       date,
       time,
     };
+  }
+
+  private getReservedCapacityForSlot(date: string, time: string): number {
+    return Array.from(this.reservations.values())
+      .filter(
+        (reservation) =>
+          reservation.date === date && reservation.time === time && reservation.status === 'active',
+      )
+      .reduce((total, reservation) => total + reservation.partySize, 0);
   }
 
   private generateReservationCode(): string {
