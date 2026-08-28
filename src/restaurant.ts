@@ -1,10 +1,15 @@
 export class Restaurant {
     reservations: Reserva[] = [];
+    slotBookings: { date: string; time: string; partySize: number }[] = [];
 
     /**
      * @param maxCapacityPerSlot Capacidad máxima de personas por horario.
      */
     constructor(public maxCapacityPerSlot: number) { }
+
+    addReservation(date: string, time: string, partySize: number): void {
+        this.slotBookings.push({ date, time, partySize });
+    }
 
     /**
      * Indica si existe disponibilidad para una fecha, hora y cantidad de personas dadas.
@@ -15,7 +20,11 @@ export class Restaurant {
      * @returns true si hay disponibilidad, false en caso contrario
      */
     hasAvailability(date: string, time: string, partySize: number): boolean {
-        return true;
+        const occupied = this.slotBookings
+            .filter((b) => b.date === date && b.time === time)
+            .reduce((sum, b) => sum + b.partySize, 0);
+
+        return occupied + partySize <= this.maxCapacityPerSlot;
     }
 }
 
