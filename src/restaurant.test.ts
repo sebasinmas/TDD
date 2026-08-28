@@ -75,6 +75,23 @@ describe('Restaurant reservations', () => {
     expect(restaurant.hasAvailability('2026-09-01', '20:00', 5)).toBe(false);
   });
 
+  it.each([
+    {
+      caseName: 'empty date',
+      date: '',
+      time: '20:00',
+      message: 'La fecha es obligatoria',
+    },
+    {
+      caseName: 'empty time',
+      date: '2026-09-01',
+      time: '',
+      message: 'La hora es obligatoria',
+    },
+  ])('rejects invalid availability query data: $caseName', ({ date, time, message }) => {
+    expect(() => restaurant.hasAvailability(date, time, 1)).toThrow(message);
+  });
+
   it('rejects a reservation when requested capacity is insufficient', () => {
     restaurant.createReservation({
       customerName: 'Ana Perez',
@@ -108,6 +125,10 @@ describe('Restaurant reservations', () => {
 
   it('rejects cancellation with a non-existing reservation code', () => {
     expect(() => restaurant.cancelReservation('RES-9999')).toThrow('Reserva no encontrada');
+  });
+
+  it('rejects cancellation without a reservation code', () => {
+    expect(() => restaurant.cancelReservation('')).toThrow('El código de reserva es obligatorio');
   });
 
   it('rejects cancellation of an already cancelled reservation', () => {
