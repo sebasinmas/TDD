@@ -1,6 +1,12 @@
+interface SlotBooking {
+    date: string;
+    time: string;
+    partySize: number;
+}
+
 export class Restaurant {
     reservations: Reserva[] = [];
-    slotBookings: { date: string; time: string; partySize: number }[] = [];
+    slotBookings: SlotBooking[] = [];
 
     /**
      * @param maxCapacityPerSlot Capacidad máxima de personas por horario.
@@ -20,11 +26,15 @@ export class Restaurant {
      * @returns true si hay disponibilidad, false en caso contrario
      */
     hasAvailability(date: string, time: string, partySize: number): boolean {
-        const occupied = this.slotBookings
-            .filter((b) => b.date === date && b.time === time)
-            .reduce((sum, b) => sum + b.partySize, 0);
+        const occupiedSeats = this.getOccupiedSeats(date, time);
 
-        return occupied + partySize <= this.maxCapacityPerSlot;
+        return occupiedSeats + partySize <= this.maxCapacityPerSlot;
+    }
+
+    private getOccupiedSeats(date: string, time: string): number {
+        return this.slotBookings
+            .filter((booking) => booking.date === date && booking.time === time)
+            .reduce((sum, booking) => sum + booking.partySize, 0);
     }
 }
 
