@@ -16,6 +16,10 @@ export interface Reservation {
   status: ReservationStatus;
 }
 
+export interface GetReservationsOptions {
+  includeCancelled?: boolean;
+}
+
 export class Restaurant {
   private readonly reservations = new Map<string, Reservation>();
   private nextReservationNumber = 1;
@@ -68,6 +72,16 @@ export class Restaurant {
     return this.copyReservation(cancelledReservation);
   }
 
+  getReservationsByDate(date: string, options: GetReservationsOptions = {}): Reservation[] {
+    const requestedDate = this.requireText(date, 'La fecha es obligatoria');
+
+    return Array.from(this.reservations.values())
+      .filter((reservation) => reservation.date === requestedDate)
+      .filter((reservation) => options.includeCancelled || reservation.status === 'active')
+      .sort((left, right) => this.compareReservations(left, right))
+      .map((reservation) => this.copyReservation(reservation));
+  }
+
   private validateReservationInput(input: CreateReservationInput): CreateReservationInput {
     const customerName = this.requireText(input.customerName, 'El nombre del cliente es obligatorio');
     const date = this.requireText(input.date, 'La fecha es obligatoria');
@@ -112,6 +126,16 @@ export class Restaurant {
     const code = `RES-${String(this.nextReservationNumber).padStart(4, '0')}`;
     this.nextReservationNumber += 1;
     return code;
+  }
+
+  private compareReservations(left: Reservation, right: Reservation): number {
+    const timeComparison = left.time.localeCompare(right.time);
+
+    if (timeComparison !== 0) {
+      return timeComparison;
+    }
+
+    return left.code.localeCompare(right.code);
   }
 
   private copyReservation(reservation: Reservation): Reservation {
