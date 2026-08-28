@@ -137,4 +137,60 @@ describe('Restaurant reservations', () => {
 
     expect(restaurant.hasAvailability('2026-09-01', '20:00', 30)).toBe(true);
   });
+
+  it('lists active reservations for a requested date', () => {
+    const firstReservation = restaurant.createReservation({
+      customerName: 'Ana Perez',
+      partySize: 2,
+      date: '2026-09-01',
+      time: '20:00',
+    });
+    const secondReservation = restaurant.createReservation({
+      customerName: 'Luis Diaz',
+      partySize: 3,
+      date: '2026-09-01',
+      time: '19:00',
+    });
+    restaurant.createReservation({
+      customerName: 'Marta Soto',
+      partySize: 4,
+      date: '2026-09-02',
+      time: '20:00',
+    });
+
+    expect(restaurant.getReservationsByDate('2026-09-01')).toEqual([
+      secondReservation,
+      firstReservation,
+    ]);
+  });
+
+  it('rejects reservation listing without a date', () => {
+    expect(() => restaurant.getReservationsByDate('')).toThrow('La fecha es obligatoria');
+  });
+
+  it('normalizes the requested date before listing reservations', () => {
+    const reservation = restaurant.createReservation({
+      customerName: 'Ana Perez',
+      partySize: 2,
+      date: '2026-09-01',
+      time: '20:00',
+    });
+
+    expect(restaurant.getReservationsByDate(' 2026-09-01 ')).toEqual([reservation]);
+  });
+
+  it('excludes cancelled reservations from the date listing by default', () => {
+    const reservation = restaurant.createReservation({
+      customerName: 'Ana Perez',
+      partySize: 2,
+      date: '2026-09-01',
+      time: '20:00',
+    });
+    restaurant.cancelReservation(reservation.code);
+
+    expect(restaurant.getReservationsByDate('2026-09-01')).toEqual([]);
+    expect(restaurant.getReservationsByDate('2026-09-01', { includeCancelled: true })).toEqual([
+      { ...reservation, status: 'cancelled' },
+    ]);
+  });
 });
