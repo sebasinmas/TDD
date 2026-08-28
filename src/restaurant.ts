@@ -48,17 +48,21 @@ export class Restaurant {
   }
 
   hasAvailability(date: string, time: string, requestedPartySize = DEFAULT_REQUESTED_PARTY_SIZE): boolean {
+    const requestedDate = this.requireText(date, 'La fecha es obligatoria');
+    const requestedTime = this.requireText(time, 'La hora es obligatoria');
+
     this.ensurePositiveInteger(
       requestedPartySize,
       'La cantidad de personas debe ser mayor que cero',
     );
 
-    const reservedCapacity = this.getReservedCapacityForSlot(date, time);
+    const reservedCapacity = this.getReservedCapacityForSlot(requestedDate, requestedTime);
     return reservedCapacity + requestedPartySize <= this.capacityPerSlot;
   }
 
   cancelReservation(code: string): Reservation {
-    const reservation = this.reservations.get(code);
+    const reservationCode = this.requireText(code, 'El código de reserva es obligatorio');
+    const reservation = this.reservations.get(reservationCode);
 
     if (!reservation) {
       throw new Error('Reserva no encontrada');
@@ -69,7 +73,7 @@ export class Restaurant {
     }
 
     const cancelledReservation: Reservation = { ...reservation, status: 'cancelled' };
-    this.reservations.set(code, cancelledReservation);
+    this.reservations.set(reservationCode, cancelledReservation);
 
     return this.copyReservation(cancelledReservation);
   }
