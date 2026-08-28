@@ -20,6 +20,8 @@ export interface GetReservationsOptions {
   includeCancelled?: boolean;
 }
 
+const DEFAULT_REQUESTED_PARTY_SIZE = 1;
+
 export class Restaurant {
   private readonly reservations = new Map<string, Reservation>();
   private nextReservationNumber = 1;
@@ -45,7 +47,7 @@ export class Restaurant {
     return this.copyReservation(reservation);
   }
 
-  hasAvailability(date: string, time: string, requestedPartySize = 1): boolean {
+  hasAvailability(date: string, time: string, requestedPartySize = DEFAULT_REQUESTED_PARTY_SIZE): boolean {
     this.ensurePositiveInteger(
       requestedPartySize,
       'La cantidad de personas debe ser mayor que cero',
