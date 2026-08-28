@@ -37,12 +37,16 @@ export class Restaurant {
     };
 
     this.reservations.set(reservation.code, reservation);
-    return { ...reservation };
+    return this.copyReservation(reservation);
   }
 
   private generateReservationCode(): string {
     const code = `RES-${String(this.nextReservationNumber).padStart(4, '0')}`;
     this.nextReservationNumber += 1;
     return code;
+  }
+
+  private copyReservation(reservation: Reservation): Reservation {
+    return { ...reservation };
   }
 }
