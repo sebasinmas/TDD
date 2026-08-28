@@ -21,9 +21,7 @@ export class Restaurant {
   private nextReservationNumber = 1;
 
   constructor(private readonly capacityPerSlot: number) {
-    if (!Number.isInteger(capacityPerSlot) || capacityPerSlot <= 0) {
-      throw new Error('La capacidad por horario debe ser mayor que cero');
-    }
+    this.ensurePositiveInteger(capacityPerSlot, 'La capacidad por horario debe ser mayor que cero');
   }
 
   createReservation(input: CreateReservationInput): Reservation {
@@ -44,9 +42,10 @@ export class Restaurant {
   }
 
   hasAvailability(date: string, time: string, requestedPartySize = 1): boolean {
-    if (!Number.isInteger(requestedPartySize) || requestedPartySize <= 0) {
-      throw new Error('La cantidad de personas debe ser mayor que cero');
-    }
+    this.ensurePositiveInteger(
+      requestedPartySize,
+      'La cantidad de personas debe ser mayor que cero',
+    );
 
     const reservedCapacity = this.getReservedCapacityForSlot(date, time);
     return reservedCapacity + requestedPartySize <= this.capacityPerSlot;
@@ -70,25 +69,11 @@ export class Restaurant {
   }
 
   private validateReservationInput(input: CreateReservationInput): CreateReservationInput {
-    const customerName = input.customerName.trim();
-    const date = input.date.trim();
-    const time = input.time.trim();
+    const customerName = this.requireText(input.customerName, 'El nombre del cliente es obligatorio');
+    const date = this.requireText(input.date, 'La fecha es obligatoria');
+    const time = this.requireText(input.time, 'La hora es obligatoria');
 
-    if (!customerName) {
-      throw new Error('El nombre del cliente es obligatorio');
-    }
-
-    if (!Number.isInteger(input.partySize) || input.partySize <= 0) {
-      throw new Error('La cantidad de personas debe ser mayor que cero');
-    }
-
-    if (!date) {
-      throw new Error('La fecha es obligatoria');
-    }
-
-    if (!time) {
-      throw new Error('La hora es obligatoria');
-    }
+    this.ensurePositiveInteger(input.partySize, 'La cantidad de personas debe ser mayor que cero');
 
     return {
       customerName,
@@ -96,6 +81,22 @@ export class Restaurant {
       date,
       time,
     };
+  }
+
+  private requireText(value: string, errorMessage: string): string {
+    const normalizedValue = value.trim();
+
+    if (!normalizedValue) {
+      throw new Error(errorMessage);
+    }
+
+    return normalizedValue;
+  }
+
+  private ensurePositiveInteger(value: number, errorMessage: string): void {
+    if (!Number.isInteger(value) || value <= 0) {
+      throw new Error(errorMessage);
+    }
   }
 
   private getReservedCapacityForSlot(date: string, time: string): number {
