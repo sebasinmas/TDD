@@ -1,6 +1,11 @@
 export class Restaurant {
     reservations: Reserva[] = [];
 
+    constructor(public maxCapacityPerSlot: number) { }
+
+    hasAvailability(date: string, time: string, partySize: number): boolean {
+        return true;
+    }
 }
 
 
