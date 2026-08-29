@@ -1,1 +1,10 @@
-export { StringCalculator } from './calculator.js';
+export {
+    Restaurant,
+    Reserva,
+    Customer,
+    ReservationStatus,
+    ReservationError,
+    InvalidReservationIdError,
+    ReservationNotFoundError,
+    ReservationAlreadyCancelledError
+} from './restaurant.js';
