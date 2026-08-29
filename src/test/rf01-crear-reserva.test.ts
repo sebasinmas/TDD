@@ -11,17 +11,15 @@ describe('RF01 - Crear Reserva', () => {
 
   // PRUEBA 1 ✅
   it('debe crear una reserva correctamente con datos válidos', () => {
-    const reserva = restaurante.crearReserva({
-      nombreCliente: 'Juan Pérez', cantidadPersonas: 4, fecha: '2026-09-15', hora: '20:00',
-    });
+    const reserva = restaurante.crearReserva({ nombreCliente: 'Juan Pérez', cantidadPersonas: 4, fecha: '2026-09-15', hora: '20:00' });
     expect(reserva).toBeDefined();
   });
 
   // PRUEBA 2 ✅
   it('debe generar un código de reserva único por cada reserva creada', () => {
-    const reserva1 = restaurante.crearReserva({ nombreCliente: 'Ana García', cantidadPersonas: 2, fecha: '2026-09-15', hora: '20:00' });
-    const reserva2 = restaurante.crearReserva({ nombreCliente: 'Carlos López', cantidadPersonas: 3, fecha: '2026-09-15', hora: '21:00' });
-    expect(reserva1.codigoReserva).not.toBe(reserva2.codigoReserva);
+    const r1 = restaurante.crearReserva({ nombreCliente: 'Ana García', cantidadPersonas: 2, fecha: '2026-09-15', hora: '20:00' });
+    const r2 = restaurante.crearReserva({ nombreCliente: 'Carlos López', cantidadPersonas: 3, fecha: '2026-09-15', hora: '21:00' });
+    expect(r1.codigoReserva).not.toBe(r2.codigoReserva);
   });
 
   // PRUEBA 3 ✅
@@ -31,25 +29,34 @@ describe('RF01 - Crear Reserva', () => {
     expect(reserva.hora).toBe('19:30');
   });
 
-  // PRUEBA 4a: nombre vacío
+  // PRUEBA 4a ✅
   it('debe lanzar un error si el nombre del cliente está vacío', () => {
-    expect(() =>
-      restaurante.crearReserva({ nombreCliente: '', cantidadPersonas: 3, fecha: '2026-09-15', hora: '20:00' })
-    ).toThrow('El nombre del cliente es obligatorio');
+    expect(() => restaurante.crearReserva({ nombreCliente: '', cantidadPersonas: 3, fecha: '2026-09-15', hora: '20:00' }))
+      .toThrow('El nombre del cliente es obligatorio');
   });
 
-  // PRUEBA 4b: fecha vacía
+  // PRUEBA 4b ✅
   it('debe lanzar un error si la fecha está vacía', () => {
-    expect(() =>
-      restaurante.crearReserva({ nombreCliente: 'Pedro Martínez', cantidadPersonas: 2, fecha: '', hora: '20:00' })
-    ).toThrow('La fecha es obligatoria');
+    expect(() => restaurante.crearReserva({ nombreCliente: 'Pedro Martínez', cantidadPersonas: 2, fecha: '', hora: '20:00' }))
+      .toThrow('La fecha es obligatoria');
   });
 
-  // PRUEBA 4c: hora vacía
+  // PRUEBA 4c ✅
   it('debe lanzar un error si la hora está vacía', () => {
-    expect(() =>
-      restaurante.crearReserva({ nombreCliente: 'Pedro Martínez', cantidadPersonas: 2, fecha: '2026-09-15', hora: '' })
-    ).toThrow('La hora es obligatoria');
+    expect(() => restaurante.crearReserva({ nombreCliente: 'Pedro Martínez', cantidadPersonas: 2, fecha: '2026-09-15', hora: '' }))
+      .toThrow('La hora es obligatoria');
+  });
+
+  // PRUEBA 5a: cantidad de personas = 0
+  it('debe lanzar un error si la cantidad de personas es 0', () => {
+    expect(() => restaurante.crearReserva({ nombreCliente: 'Luis Ramírez', cantidadPersonas: 0, fecha: '2026-09-15', hora: '20:00' }))
+      .toThrow('La cantidad de personas debe ser mayor a cero');
+  });
+
+  // PRUEBA 5b: cantidad de personas negativa
+  it('debe lanzar un error si la cantidad de personas es negativa', () => {
+    expect(() => restaurante.crearReserva({ nombreCliente: 'Luis Ramírez', cantidadPersonas: -3, fecha: '2026-09-15', hora: '20:00' }))
+      .toThrow('La cantidad de personas debe ser mayor a cero');
   });
 
 });
