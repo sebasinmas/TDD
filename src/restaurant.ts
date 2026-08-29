@@ -1,15 +1,11 @@
 import { randomUUID } from 'crypto';
 
-// ─── Interfaces ───────────────────────────────────────────────────────────────
-
 export interface DatosReserva {
     nombreCliente: string;
     cantidadPersonas: number;
     fecha: string;
     hora: string;
 }
-
-// ─── Entidades del dominio ────────────────────────────────────────────────────
 
 export class Reserva {
     constructor(
@@ -21,8 +17,6 @@ export class Reserva {
     ) { }
 }
 
-// ─── Clase principal ──────────────────────────────────────────────────────────
-
 export class Restaurant {
     private reservas: Reserva[] = [];
 
@@ -30,6 +24,7 @@ export class Restaurant {
 
     crearReserva(datos: DatosReserva): Reserva {
         this.validarCamposObligatorios(datos);
+        if (datos.cantidadPersonas <= 0) throw new Error('La cantidad de personas debe ser mayor a cero');
 
         const reserva = new Reserva(
             this.generarCodigo(),
