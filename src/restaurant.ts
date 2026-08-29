@@ -1,11 +1,15 @@
 import { randomUUID } from 'crypto';
 
+// ─── Interfaces ───────────────────────────────────────────────────────────────
+
 export interface DatosReserva {
     nombreCliente: string;
     cantidadPersonas: number;
     fecha: string;
     hora: string;
 }
+
+// ─── Entidades del dominio ────────────────────────────────────────────────────
 
 export class Reserva {
     constructor(
@@ -16,6 +20,8 @@ export class Reserva {
         public hora: string
     ) { }
 }
+
+// ─── Clase principal ──────────────────────────────────────────────────────────
 
 export class Restaurant {
     private reservas: Reserva[] = [];
@@ -37,18 +43,28 @@ export class Restaurant {
         return reserva;
     }
 
+    // ─── Validaciones ─────────────────────────────────────────────────────────
+
     private validarDatos(datos: DatosReserva): void {
-        if (!datos.nombreCliente)             throw new Error('El nombre del cliente es obligatorio');
-        if (!datos.fecha)                     throw new Error('La fecha es obligatoria');
-        if (!datos.hora)                      throw new Error('La hora es obligatoria');
-        if (datos.cantidadPersonas <= 0)      throw new Error('La cantidad de personas debe ser mayor a cero');
-        if (!Number.isInteger(datos.cantidadPersonas)) throw new Error('La cantidad de personas debe ser un número entero');
+        this.validarCamposObligatorios(datos);
+        this.validarCantidadPersonas(datos.cantidadPersonas);
         this.validarFecha(datos.fecha);
     }
 
+    private validarCamposObligatorios(datos: DatosReserva): void {
+        if (!datos.nombreCliente) throw new Error('El nombre del cliente es obligatorio');
+        if (!datos.fecha)         throw new Error('La fecha es obligatoria');
+        if (!datos.hora)          throw new Error('La hora es obligatoria');
+    }
+
+    private validarCantidadPersonas(cantidad: number): void {
+        if (!Number.isInteger(cantidad))  throw new Error('La cantidad de personas debe ser un número entero');
+        if (cantidad <= 0)                throw new Error('La cantidad de personas debe ser mayor a cero');
+    }
+
     private validarFecha(fecha: string): void {
-        const formatoFecha = /^\d{4}-\d{2}-\d{2}$/;
-        if (!formatoFecha.test(fecha)) throw new Error('Formato de fecha inválido. Se esperaba YYYY-MM-DD');
+        const formatoISO = /^\d{4}-\d{2}-\d{2}$/;
+        if (!formatoISO.test(fecha)) throw new Error('Formato de fecha inválido. Se esperaba YYYY-MM-DD');
 
         const hoy = new Date();
         hoy.setHours(0, 0, 0, 0);
