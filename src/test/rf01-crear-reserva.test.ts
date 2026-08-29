@@ -47,16 +47,28 @@ describe('RF01 - Crear Reserva', () => {
       .toThrow('La hora es obligatoria');
   });
 
-  // PRUEBA 5a: cantidad de personas = 0
+  // PRUEBA 5a ✅
   it('debe lanzar un error si la cantidad de personas es 0', () => {
     expect(() => restaurante.crearReserva({ nombreCliente: 'Luis Ramírez', cantidadPersonas: 0, fecha: '2026-09-15', hora: '20:00' }))
       .toThrow('La cantidad de personas debe ser mayor a cero');
   });
 
-  // PRUEBA 5b: cantidad de personas negativa
+  // PRUEBA 5b ✅
   it('debe lanzar un error si la cantidad de personas es negativa', () => {
     expect(() => restaurante.crearReserva({ nombreCliente: 'Luis Ramírez', cantidadPersonas: -3, fecha: '2026-09-15', hora: '20:00' }))
       .toThrow('La cantidad de personas debe ser mayor a cero');
+  });
+
+  // PRUEBA 6: fecha anterior a hoy
+  it('debe lanzar un error si la fecha de la reserva ya pasó', () => {
+    expect(() => restaurante.crearReserva({ nombreCliente: 'Sofía Herrera', cantidadPersonas: 2, fecha: '2020-01-01', hora: '20:00' }))
+      .toThrow('La fecha de la reserva no puede ser anterior a hoy');
+  });
+
+  // PRUEBA 8: formato de fecha inválido
+  it('debe lanzar un error si el formato de fecha es inválido', () => {
+    expect(() => restaurante.crearReserva({ nombreCliente: 'Roberto Silva', cantidadPersonas: 2, fecha: '15/09/2026', hora: '20:00' }))
+      .toThrow('Formato de fecha inválido. Se esperaba YYYY-MM-DD');
   });
 
 });
