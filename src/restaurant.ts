@@ -40,14 +40,16 @@ export class Restaurant {
         if (!datos.fecha)                throw new Error('La fecha es obligatoria');
         if (!datos.hora)                 throw new Error('La hora es obligatoria');
         if (datos.cantidadPersonas <= 0) throw new Error('La cantidad de personas debe ser mayor a cero');
+        this.validarFecha(datos.fecha);
+    }
 
+    private validarFecha(fecha: string): void {
         const formatoFecha = /^\d{4}-\d{2}-\d{2}$/;
-        if (!formatoFecha.test(datos.fecha)) throw new Error('Formato de fecha inválido. Se esperaba YYYY-MM-DD');
+        if (!formatoFecha.test(fecha)) throw new Error('Formato de fecha inválido. Se esperaba YYYY-MM-DD');
 
         const hoy = new Date();
         hoy.setHours(0, 0, 0, 0);
-        const fechaReserva = new Date(datos.fecha);
-        if (fechaReserva < hoy) throw new Error('La fecha de la reserva no puede ser anterior a hoy');
+        if (new Date(fecha) < hoy) throw new Error('La fecha de la reserva no puede ser anterior a hoy');
     }
 
     private generarCodigo(): string {
