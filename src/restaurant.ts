@@ -29,7 +29,17 @@ export class Restaurant {
     constructor(private capacidadMaxima: number) { }
 
     crearReserva(datos: DatosReserva): Reserva {
-        const codigo = randomUUID();
-        return new Reserva(codigo, datos.nombreCliente, datos.cantidadPersonas, datos.fecha, datos.hora);
+        const reserva = new Reserva(
+            this.generarCodigo(),
+            datos.nombreCliente,
+            datos.cantidadPersonas,
+            datos.fecha,
+            datos.hora
+        );
+        return reserva;
+    }
+
+    private generarCodigo(): string {
+        return randomUUID();
     }
 }
