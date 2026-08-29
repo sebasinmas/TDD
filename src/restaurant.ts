@@ -23,8 +23,7 @@ export class Restaurant {
     constructor(private capacidadMaxima: number) { }
 
     crearReserva(datos: DatosReserva): Reserva {
-        this.validarCamposObligatorios(datos);
-        if (datos.cantidadPersonas <= 0) throw new Error('La cantidad de personas debe ser mayor a cero');
+        this.validarDatos(datos);
 
         const reserva = new Reserva(
             this.generarCodigo(),
@@ -36,10 +35,11 @@ export class Restaurant {
         return reserva;
     }
 
-    private validarCamposObligatorios(datos: DatosReserva): void {
-        if (!datos.nombreCliente) throw new Error('El nombre del cliente es obligatorio');
-        if (!datos.fecha)         throw new Error('La fecha es obligatoria');
-        if (!datos.hora)          throw new Error('La hora es obligatoria');
+    private validarDatos(datos: DatosReserva): void {
+        if (!datos.nombreCliente)      throw new Error('El nombre del cliente es obligatorio');
+        if (!datos.fecha)              throw new Error('La fecha es obligatoria');
+        if (!datos.hora)               throw new Error('La hora es obligatoria');
+        if (datos.cantidadPersonas <= 0) throw new Error('La cantidad de personas debe ser mayor a cero');
     }
 
     private generarCodigo(): string {
