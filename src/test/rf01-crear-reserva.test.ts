@@ -59,16 +59,29 @@ describe('RF01 - Crear Reserva', () => {
       .toThrow('La cantidad de personas debe ser mayor a cero');
   });
 
-  // PRUEBA 6: fecha anterior a hoy
+  // PRUEBA 6 ✅
   it('debe lanzar un error si la fecha de la reserva ya pasó', () => {
     expect(() => restaurante.crearReserva({ nombreCliente: 'Sofía Herrera', cantidadPersonas: 2, fecha: '2020-01-01', hora: '20:00' }))
       .toThrow('La fecha de la reserva no puede ser anterior a hoy');
   });
 
-  // PRUEBA 8: formato de fecha inválido
+  // PRUEBA 7: sin disponibilidad
+  it('debe lanzar un error si no hay disponibilidad para la fecha y hora solicitada', () => {
+    restaurante.crearReserva({ nombreCliente: 'Cliente Existente', cantidadPersonas: 8, fecha: '2026-09-15', hora: '20:00' });
+    expect(() => restaurante.crearReserva({ nombreCliente: 'Cliente Nuevo', cantidadPersonas: 4, fecha: '2026-09-15', hora: '20:00' }))
+      .toThrow('No hay disponibilidad para la fecha y hora solicitada');
+  });
+
+  // PRUEBA 8 ✅
   it('debe lanzar un error si el formato de fecha es inválido', () => {
     expect(() => restaurante.crearReserva({ nombreCliente: 'Roberto Silva', cantidadPersonas: 2, fecha: '15/09/2026', hora: '20:00' }))
       .toThrow('Formato de fecha inválido. Se esperaba YYYY-MM-DD');
+  });
+
+  // PRUEBA 9: cantidad de personas con decimal
+  it('debe lanzar un error si la cantidad de personas no es un número entero válido', () => {
+    expect(() => restaurante.crearReserva({ nombreCliente: 'Elena Vega', cantidadPersonas: 2.5, fecha: '2026-09-15', hora: '20:00' }))
+      .toThrow('La cantidad de personas debe ser un número entero');
   });
 
 });
