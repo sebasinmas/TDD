@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto';
+
 // ─── Interfaces ───────────────────────────────────────────────────────────────
 
 export interface DatosReserva {
@@ -27,6 +29,7 @@ export class Restaurant {
     constructor(private capacidadMaxima: number) { }
 
     crearReserva(datos: DatosReserva): Reserva {
-        return new Reserva('1', datos.nombreCliente, datos.cantidadPersonas, datos.fecha, datos.hora);
+        const codigo = randomUUID();
+        return new Reserva(codigo, datos.nombreCliente, datos.cantidadPersonas, datos.fecha, datos.hora);
     }
 }
